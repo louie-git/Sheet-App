@@ -5,7 +5,7 @@ import keys from '../creds.js'
 
 
 let sheets = ''
-
+// used to connect to Google Sheets
 const connection = () => {
 
   const client = new google.auth.JWT(

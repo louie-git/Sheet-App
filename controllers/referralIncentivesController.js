@@ -7,6 +7,7 @@ import pagination from '../helpers/pagination.js'
 
 
 const spreadsheetId = process.env.SPREAD_SHEET_ID;
+const referralIncentivesSheet = process.env.REFERRAL_INCENTIVES_SHEET_NAME
 
 async function getData (req, res){
 
@@ -19,14 +20,14 @@ async function getData (req, res){
     //Get total Data.
     const totalSheet = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Referral Incentives!A:AQ`
+      range:`${referralIncentivesSheet}!A:AQ`
     })
 
     const total_data = totalSheet.data.values
     //Get data based on limit and page.
     const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Referral Incentives!A${from}:AQ${to}`
+      range:`${referralIncentivesSheet}!A${from}:AQ${to}`
     })
     const rows = sheetData.data.values
     
@@ -39,31 +40,32 @@ async function getData (req, res){
 
 //not used just for reference
 async function addData (req,res) {
+  return res.status({message: 'Not Found'})
+  // let valueInputOption = 'USER_ENTERED'
+  // const values = [
+  //   [ "DRC- First Day",	"6027",	"Epe", "Inah Marie", "", "","21782",	"Palacios",	"Gizelle",	"DrCatalyst", "Feb 10, 2025"]
+  // ]
+  // try {
 
-  let valueInputOption = 'USER_ENTERED'
-  const values = [
-    [ "DRC- First Day",	"6027",	"Epe", "Inah Marie", "", "","21782",	"Palacios",	"Gizelle",	"DrCatalyst", "Feb 10, 2025"]
-  ]
-  try {
-
-    const ReferralIncentivesData = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range:`Referral Incentives`
-    })
-    const ReferralIncentivesDataCount = ( ReferralIncentivesData.data.values).length
+  //   const ReferralIncentivesData = await sheets.spreadsheets.values.get({
+  //     spreadsheetId,
+  //     range:`${referralIncentivesSheet}`
+  //   })
+  //   const ReferralIncentivesDataCount = ( ReferralIncentivesData.data.values).length
     
-    const response = await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `Referral Incentives!A${ReferralIncentivesDataCount + 1}`,
-      valueInputOption,
-      resource: {
-        values
-      }
-    })
-    res.status(200).send({message: 'Data added successfully.'})
-  } catch (error) {
-    res.status(500).send({MessageEvent: 'Internal error', error: error.message})
-  }
+  //   const response = await sheets.spreadsheets.values.update({
+  //     spreadsheetId,
+  //     range: `${referralIncentivesSheet}!A${ReferralIncentivesDataCount + 1}`,
+  //     valueInputOption,
+  //     resource: {
+  //       values
+  //     }
+  //   })
+  //   res.status(200).send({message: 'Data added successfully.'})
+  // } catch (error) {
+  //   res.status(500).send({MessageEvent: 'Internal error', error: error.message})
+  // }
+
 }
 
 

@@ -6,7 +6,7 @@ import pagination from '../helpers/pagination.js'
 
 
 const spreadsheetId = process.env.SPREAD_SHEET_ID;
-
+const referralResponsesSheet = process.env.REFERRAL_RESPONSES_SHEET_NAME
 async function getData (req, res){
   const page = req.query.page ? req.query.page : 1
   const limit = req.query.limit ? req.query.limit : 10
@@ -16,14 +16,14 @@ async function getData (req, res){
   try {
     const totalSheets = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of 2025 Referral Responses!A:T`
+      range:`${referralResponsesSheet}!A:T`
     })
 
     const total_data = totalSheets.data.values
     
     const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of 2025 Referral Responses!A${from}:T${to}`
+      range:`${referralResponsesSheet}!A${from}:T${to}`
     })
     const rows = sheetData.data.values
     

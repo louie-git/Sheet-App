@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv';
 import mainRouter from './routes/mainRouter.js'
 import cors from 'cors'
+//Not necessary, implemented just incase.
 import authenticateUser from './auth/jwtauth.js';
 import { authorizeUser } from './middleware/authMiddleware.js';
 dotenv.config();
@@ -12,11 +13,13 @@ const app = express()
 
 app.use(express.json())
 
+
+//This is not really important since the application is used only by Rean.
 var corsOptions = {
   origin: '*',
   preflightContinue: false,
   credentials: true,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200 
 }
 
 app.use(cors(corsOptions))
@@ -29,5 +32,7 @@ connection()
 
 // app.use('/api', mainRouter) // Use this instead.
 app.use('/', mainRouter)
+app.get('/asd', ()=> console.log('fsdf'))
 
 app.listen(3000, (req, res) => console.log('Server running on port 3000.'))
+

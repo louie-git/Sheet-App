@@ -4,7 +4,7 @@ import pagination from '../helpers/pagination.js';
 dotenv.config();
 
 const newHireTrackerSheetID = process.env.NEW_HIRE_TRACKER_SHEET_ID
-
+const newHireSheet = process.env.NEW_HIRE_SHEET_NAME
 async function getData (req, res){
   const page = req.query.page ? req.query.page : 1
   const limit = req.query.limit ? req.query.limit : 10
@@ -15,19 +15,15 @@ async function getData (req, res){
     //Get total Data
     const totalSheets = await sheets.spreadsheets.values.get({
       spreadsheetId: newHireTrackerSheetID ,
-      range:`2025!A:AW`
+      range:`${newHireSheet}!A:AW`
     })
-
     const total_data = totalSheets.data.values
-
     //Get data based on the limit and page
     const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId: newHireTrackerSheetID,
-      range:`2025!A${from}:AW${to}`
+      range:`${newHireSheet}!A${from}:AW${to}`
     })
-
     const rows = sheetData.data.values
-
     res.status(200).send({rows, total_data: total_data.length})
   } catch (error) {
    res.status(500).send({message: 'Internal error', error: error.message}) 

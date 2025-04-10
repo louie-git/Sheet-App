@@ -6,6 +6,7 @@ import pagination from '../helpers/pagination.js';
 dotenv.config();
 
 const spreadsheetId = process.env.SPREAD_SHEET_ID;
+const incentivesForFincomSheet = process.env.INCENTIVES_FOR_FINCOM_SHEET_NAME
 
 async function getData (req, res){
   try {
@@ -14,16 +15,18 @@ async function getData (req, res){
     const limit = req.query.limit ? req.query.limit : 10
     const skip = 2 // 2 is the value used for headers. This depends on the number of rows that is used for headers
     const {from, to} = pagination.paginate(skip,  page, limit )
+
     const totalSheets = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:'Copy of Incentives for FinCom'
+      range:incentivesForFincomSheet
     })
 
     const total_data = (totalSheets.data.values).length
 
-    const sheetData = await sheets.spreadsheetId.values({
+    const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `Copy of Incentives for FinCom!A${from}:U${to}`
+      // range: `Copy of Incentives for FinCom!A${from}:U${to}`
+      range: `${incentivesForFincomSheet}!A${from}:U${to}`
     })
   
     const rows = sheetData.data.values
@@ -39,7 +42,7 @@ async function addData (req,res) {
   //Check if there are users
   if(!req.body.users) return res.status(400).send({message: 'No users'})
   //Check if required fields exists
-  const verified = req.body.users.every(data => data.amount > 1000 && data.amount <= 10000 && data.effective_date && data.remarks)
+  const verified = req.body.users.every(data => data.amount >= 1000 && data.amount <= 10000 && data.effective_date && data.remarks)
   if(!verified) return res.status(400).send({message: 'Some data are required.'})
 
   let valueInputOption = 'USER_ENTERED'
@@ -74,14 +77,14 @@ async function addData (req,res) {
     //Get the lenght of data
     const sheetsData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of Incentives for FinCom`
+      range:incentivesForFincomSheet
     })
     const rows = ( sheetsData.data.values).length
 
     //Add data to the last.
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Copy of Incentives for FinCom!A${rows + 1}`,
+      range: `${incentivesForFincomSheet}!A${rows + 1}`,
       valueInputOption,
       resource: {
         values

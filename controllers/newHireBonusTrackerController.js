@@ -5,7 +5,9 @@ import pagination from '../helpers/pagination.js';
 dotenv.config();
 
 const spreadsheetId = process.env.SPREAD_SHEET_ID;
-
+const newHireBonusTrackerSheet = process.env.NEW_HIRE_BONUS_TRACKER_SHEET_NAME
+const referralResponsesSheet = process.env.REFERRAL_RESPONSES_SHEET_NAME
+const referralIncetivesSheet = process.env.REFERRAL_INCENTIVES_SHEET_NAME
 async function getData (req, res){
 
   const page = req.query.page ? req.query.page : 1
@@ -17,15 +19,15 @@ async function getData (req, res){
     //Get total data
     const totalSheets = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of New Hire Bonus Tracker!A:Z`
+      range:`${newHireBonusTrackerSheet}!A:Z`
     })
 
     const total_data = totalSheets.data.values
-
+    console.log('hierererer',newHireBonusTrackerSheet)
     //.Get total data based on the limit and page.
     const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of New Hire Bonus Tracker!A${from}:Z${to}`
+      range:`${newHireBonusTrackerSheet}!A${from}:Z${to}`
     })
 
     const rows = sheetData.data.values
@@ -66,11 +68,11 @@ async function addData (req,res) {
 
     const referrals = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range:`Copy of 2025 Referral Responses!A:T`
+      range:`${referralResponsesSheet}!A:T`
     })
 
     let rows = referrals.data.values
-    //Reverse the array to loop through in ascending manner. Starting from latest data.
+    //Reverse the array to loop through, Starting from latest data.
     rows = rows.toReversed()
 
     const referrersInfo = []
@@ -153,52 +155,49 @@ async function addData (req,res) {
 
         }
       }
-
       for(let row of rows){
         let exists = false    
-        for(let value of row){ //this can be changes to row.includes
-          if(value == 'renielyntubig0916@gmail.com') { //to do: change to new Hire email
-            exists = true
-            referrersInfo.push([
-              cur.status, //Always DRC- First Day.
-              row[1],
-              row[2],
-              row[3],
-              '',
-              '',
-              cur.employee_id,
-              cur.last_name,
-              cur.first_name,
-              cur.LOB,
-              cur.start_date,
-              cur.designation,
-              '',
-              '',
-              '',
-              cur.start_date, // attended first day
-              ['DrCatalyst', 'Meditab', 'ErTech'].includes(cur.LOB) ? 2000 : 1000, // amount
-              checkPayDate(new Date(cur.start_date)), //pay day
-              '', 
-              '', //date for live with client  //Manually assigned
-              cur.LOB === 'DrCatalyst' ? 2000 : '',
-              '', // Pay day 
-              '',
-              '', // Training Eval Date // Manually assigned
-              '', // Training Status 
-              amountFormat(cur.LOB, 1), // Amount
-              '', // Payday
-              '',
-              thirdMonth, // 3rd month date
-              '', // employment status
-              amountFormat(cur.LOB, 3), // amount
-              checkPayDate(new Date(thirdMonth)), // pay
-              '',
-              sixthMonth, // regularization month date
-              '', // employment status
-              amountFormat(cur.LOB, 5), // amount
-              checkPayDate(new Date(sixthMonth)), // pay
-            ])
-          }
+        if(row.includes(cur.email)){
+          exists = true
+          referrersInfo.push([
+            cur.status, //Always DRC- First Day.
+            row[1],
+            row[2],
+            row[3],
+            '',
+            '',
+            cur.employee_id,
+            cur.last_name,
+            cur.first_name,
+            cur.LOB,
+            cur.start_date,
+            cur.designation,
+            '',
+            '',
+            '',
+            cur.start_date, // attended first day
+            ['DrCatalyst', 'Meditab', 'ErTech'].includes(cur.LOB) ? 2000 : 1000, // amount
+            checkPayDate(new Date(cur.start_date)), //pay day
+            '', 
+            '', //date for live with client  //Manually assigned
+            cur.LOB === 'DrCatalyst' ? 2000 : '',
+            '', // Pay day 
+            '',
+            '', // Training Eval Date // Manually assigned
+            '', // Training Status 
+            amountFormat(cur.LOB, 1), // Amount
+            '', // Payday
+            '',
+            thirdMonth, // 3rd month date
+            '', // employment status
+            amountFormat(cur.LOB, 3), // amount
+            checkPayDate(new Date(thirdMonth)), // pay
+            '',
+            sixthMonth, // regularization month date
+            '', // employment status
+            amountFormat(cur.LOB, 5), // amount
+            checkPayDate(new Date(sixthMonth)), // pay
+          ])
         }
         if(exists) break;
       }
@@ -209,7 +208,7 @@ async function addData (req,res) {
     //Get The lenght of rows in New Hire Bonus Tracker
     const newHireBonusTrackerRows = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'Copy of New Hire Bonus Tracker'
+      range: newHireBonusTrackerSheet
     })
 
     const newHireBonusTrackerCount = (newHireBonusTrackerRows.data.values).length
@@ -218,7 +217,7 @@ async function addData (req,res) {
     let valueInputOption = 'USER_ENTERED'
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Copy of New Hire Bonus Tracker!A${newHireBonusTrackerCount + 1}`,
+      range: `${newHireBonusTrackerSheet}!A${newHireBonusTrackerCount + 1}`,
       valueInputOption,
       resource: {
         values:values
@@ -240,13 +239,13 @@ async function addReferrerInfoToReferrerIncentives (data) {
     const valueInputOption = 'USER_ENTERED'
     const referralIncentivesRows = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'Referral Incentives'
+      range: referralIncetivesSheet
     })
     const referralIncentivesCount = (referralIncentivesRows.data.values).length
-    //Add values to Referral Incentives    
+    //Add values to Referral Incentivess    
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Referral Incentives!A${referralIncentivesCount + 1}`,
+      range: `${referralIncetivesSheet}!A${referralIncentivesCount + 1}`,
       valueInputOption,
       resource: {
         values:data
