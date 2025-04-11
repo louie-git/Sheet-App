@@ -11,12 +11,15 @@ const __dirname = dirname(__filename);
 console.log(__filename);  // Logs the absolute path of the current file
 console.log(__dirname);   // Logs the absolute directory path of the current file
 
+// creds.json is created from google console sheets. download that file and attach here.
 const credentialsPath = join(__dirname, 'creds.json');
 const credentials = fs.readFileSync(credentialsPath, 'utf-8');
 const encodedCredentials = Buffer.from(credentials).toString('base64');
 console.log(encodedCredentials);
 
+// The credentialsJson result is used in .env file. it is a string.
 const credentialsJson = Buffer.from(encodedCredentials, 'base64').toString('utf-8');
+
 console.log('\n\n\n-->',credentialsJson)
 
 
