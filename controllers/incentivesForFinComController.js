@@ -30,8 +30,7 @@ async function getData (req, res){
     })
   
     const rows = sheetData.data.values
-  
-    res.status(200).send({rows, total_data: total_data.length})
+    res.status(200).send({rows, total_data})
   } catch (error) {
     res.status(500).send({message: 'Internal error', error: error.message})
   }
